@@ -60,25 +60,25 @@ func (p *Product) Save(db *gorm.DB) (*Product, error) {
 
 func (p *Product) FindAll(db *gorm.DB) (*[]Product, error) {
 	var err error
-	posts := []Product{}
-	err = db.Debug().Model(&Product{}).Limit(100).Find(&posts).Error
+	products := []Product{}
+	err = db.Debug().Model(&Product{}).Limit(100).Find(&products).Error
 	if err != nil {
 		return &[]Product{}, err
 	}
-	if len(posts) > 0 {
-		for i := range posts {
-			err := db.Debug().Model(&Seller{}).Where("id = ?", posts[i].SellerID).Take(&posts[i].Seller).Error
+	if len(products) > 0 {
+		for i := range products {
+			err := db.Debug().Model(&Seller{}).Where("id = ?", products[i].SellerID).Take(&products[i].Seller).Error
 			if err != nil {
 				return &[]Product{}, err
 			}
 		}
 	}
-	return &posts, nil
+	return &products, nil
 }
 
 func (p *Product) FindByID(db *gorm.DB, pid uint64) (*Product, error) {
 	var err error
-	err = db.Debug().Model(&Product{}).Where("id = ?", pid).Take(&p).Error
+	err = db.Debug().Model(&Product{}).Where("id = ?", pid).Limit(100).Find(&p).Error
 	if err != nil {
 		return &Product{}, err
 	}
@@ -89,6 +89,24 @@ func (p *Product) FindByID(db *gorm.DB, pid uint64) (*Product, error) {
 		}
 	}
 	return p, nil
+}
+
+func (p *Product) FindBySellerID(db *gorm.DB, sid uint32) (*[]Product, error) {
+	var err error
+	products := []Product{}
+	err = db.Debug().Model(&Product{}).Where("seller_id = ?", sid).Limit(100).Find(&products).Error
+	if err != nil {
+		return &[]Product{}, err
+	}
+	if len(products) > 0 {
+		for i := range products {
+			err := db.Debug().Model(&Seller{}).Where("id = ?", products[i].SellerID).Take(&products[i].Seller).Error
+			if err != nil {
+				return &[]Product{}, err
+			}
+		}
+	}
+	return &products, nil
 }
 
 func (p *Product) Update(db *gorm.DB) (*Product, error) {

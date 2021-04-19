@@ -65,7 +65,7 @@ var products = []models.Product{
 
 func Load(db *gorm.DB) {
 
-	err := db.Debug().DropTableIfExists(&models.Buyer{}, &models.Seller{}, &models.Product{}).Error
+	err := db.Debug().DropTableIfExists(&models.Buyer{}, &models.Product{}, &models.Seller{}).Error
 	if err != nil {
 		log.Fatalf("cannot drop table: %v", err)
 	}
